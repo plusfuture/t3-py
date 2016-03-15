@@ -5,28 +5,28 @@ class T3Game:
         self.board = Board()
             
     def setup(self):
-        while True:
-            p1_shape = input('P1: Please indicate your desired shape: ')
-            if len(p1_shape) > 1 or not p1_shape.isalpha():
-                print('Shape must be one alphabetical character only.')
-                continue
-            self.p1 = Player(p1_shape, 1)
-            break
-
-        while True:
-            p2_shape = input('P2: Please indicate your desired shape: ')
-            if len(p2_shape) > 1 or not p2_shape.isalpha():
-                print('Shape must be one alphabetical character only.')
-                continue
-            if p2_shape == p1_shape:
-                print('Shape must be different from player 1\'s shape!')
-                continue
-            self.p2 = Player(p2_shape, 2)
-            break
+        self.p1 = Player(None, 1)
+        self.p2 = Player(None, 2)
+        self.assign_shape(self.p1)
+        self.assign_shape(self.p2)
 
         print('Done setting up.\n')
 
     def assign_shape(self, player):
+        while True:
+            shape = input('P' + str(player.name) + ': Please indicate your desired shape: ')
+
+            if len(shape) > 1 or not shape.isalpha():
+                print('Shape must be one alphabetical character only.')
+                continue
+            
+            player.shape = shape # fix this ugly bit somehow
+
+            if self.p2.shape == self.p1.shape: 
+                print('Shape must be different from player 1\'s shape!')
+                continue
+
+            break
 
     def make_move(self, player):
         while True:
@@ -34,6 +34,7 @@ class T3Game:
             if not p_move_s.isnumeric():
                 print('You must enter a number..')
                 continue
+
             p_move = int(p_move_s)
             if p_move < 1 or p_move > 9:
                 print('Cell must be between 1 and 9..')
@@ -41,6 +42,7 @@ class T3Game:
             if not self.place(player, p_move):
                 print('Cell already taken. Pick another cell.')
                 continue
+
             print('Succesfully placed ' + str(player.shape) + ' to ' + str(p_move))
             break
     
@@ -58,7 +60,7 @@ class T3Game:
         return (cell_x, cell_y)
         
     def place(self, player, move):
-        cell = get_coords(self, move)
+        cell = self.get_coords(move)
         cell_x = cell[0]
         cell_y = cell[1]
         if self.board.grid[cell_x][cell_y] == CONST_BLANK:
@@ -75,11 +77,15 @@ class T3Game:
         return None
     
     def check_winner(self, player):
-
+        pass
         
 
 class Player:
     def __init__(self, shape, name):
+        if shape is None: # defaults for players
+            if name == 1:
+                self.shape = 'o'
+            else: self.shape = 'x'
         self.shape = shape
         self.name = name
 
